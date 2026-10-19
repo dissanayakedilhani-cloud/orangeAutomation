@@ -51,4 +51,11 @@ export class EmployeeListPage {
   row(text: string): Locator {
     return this.rows.filter({ hasText: text });
   }
+
+  async deleteEmployee(rowText: string) {
+    await this.row(rowText).locator('.bi-trash').click();
+    await this.page.getByRole('button', { name: 'Yes, Delete' }).click();
+    await expect(this.page.locator('.oxd-toast', { hasText: 'Successfully Deleted' })).toBeVisible();
+    await expect(this.spinner).toHaveCount(0, { timeout: 20_000 });
+  }
 }

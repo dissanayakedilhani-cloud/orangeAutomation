@@ -12,3 +12,16 @@ export const newEmployee = (): Employee => {
     employeeId: suffix.slice(-10),
   };
 };
+
+export const newEmployeeWithLogin = (): Employee => {
+  const employee = newEmployee();
+  return {
+    ...employee,
+    login: {
+      username: `auto.${employee.employeeId}`,
+      // OrangeHRM rule: min 7 chars, at least one number and one letter
+      password: `Auto@${employee.employeeId}a`,
+      status: 'Enabled',
+    },
+  };
+};

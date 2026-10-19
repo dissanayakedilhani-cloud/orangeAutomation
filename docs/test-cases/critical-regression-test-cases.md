@@ -6,7 +6,7 @@
 | URL | https://opensource-demo.orangehrmlive.com/ |
 | Test user | Admin / admin123 (role: Admin) |
 | Suite | Critical Regression (Smoke + Core Business Flows) |
-| Version | 1.0 (2026-10-19) |
+| Version | 1.1 (2026-10-19) – TC_003 extended with disable login + delete |
 
 ## How these 5 were selected
 
@@ -23,7 +23,7 @@ The cases were ranked by **business impact × usage frequency × risk of breakin
 |---|---|---|---|---|
 | TC_001 | Login with valid credentials | Auth | Positive / Smoke | P1 – Critical |
 | TC_002 | Login with invalid credentials is rejected | Auth | Negative / Security | P1 – Critical |
-| TC_003 | Add a new employee | PIM | Positive / Core flow | P1 – Critical |
+| TC_003 | Add a new employee, disable login, then delete | PIM + Admin | Positive / Core flow (end-to-end) | P1 – Critical |
 | TC_004 | Search an existing employee in Employee List | PIM | Positive / Core flow | P1 – Critical |
 | TC_005 | Logout ends the session | Auth | Positive / Security | P1 – Critical |
 
@@ -70,10 +70,31 @@ The cases were ranked by **business impact × usage frequency × risk of breakin
 
 ---
 
-## TC_003 – Add a new employee
+## TC_003 – Add a new employee, disable login, then delete
 
 | Field | Detail |
 |---|---|
+| Module | PIM + Admin (User Management) |
+| Priority | P1 – Critical |
+| Preconditions | Logged in as Admin |
+| Test data | First name `Auto`, Last name `Test<timestamp>`, unique Employee Id, Username `auto.<id>`, Password `Auto@<id>a` (unique on every run) |
+
+| # | Step | Expected result |
+|---|---|---|
+| 1 | Click **PIM** in the side menu | Employee List page is displayed |
+| 2 | Click **+ Add** | Add Employee form is displayed with an auto-generated Employee Id |
+| 3 | Enter First Name, Last Name and a unique Employee Id | Values are accepted |
+| 4 | Turn on **Create Login Details**. Enter Username, select Status **Enabled**, enter Password and Confirm Password | Login fields are displayed and accept the values |
+| 5 | Click **Save** | Success toast **"Successfully Saved"** appears. User lands on the employee's **Personal Details** page with the correct First and Last name |
+| 6 | Go to **Admin → User Management**, search by the Username | The user is listed with Status **Enabled** |
+| 7 | Click **Edit** (pencil), change Status to **Disabled**, click **Save** | Toast **"Successfully Updated"** appears. User returns to the Users list |
+| 8 | Search by the Username again | The user is listed with Status **Disabled** |
+| 9 | Go to **PIM → Employee List**, search by the Employee Id, click **Delete** (trash) and confirm **Yes, Delete** | Toast **"Successfully Deleted"** appears |
+| 10 | Search by the same Employee Id | **"No Records Found"** is shown |
+
+**Why critical:** Creating employees is the core HR transaction. Disabling access, for example when an employee leaves, and removing records are security and data-protection requirements. The test also cleans up its own data.
+
+---|---|
 | Module | PIM |
 | Priority | P1 – Critical |
 | Preconditions | Logged in as Admin |
@@ -138,7 +159,7 @@ The cases were ranked by **business impact × usage frequency × risk of breakin
 |---|---|
 | Admin | Create a System User (ESS role) for an employee, then log in as that user |
 | Leave | Assign leave to an employee and verify it in the Leave List |
-| PIM | Edit an employee's personal details, and delete an employee |
+| PIM | Edit an employee's personal details |
 | Admin | Role-based access: an ESS user cannot see the Admin menu |
 | Recruitment | Add a candidate to a vacancy |
 
